@@ -1,5 +1,5 @@
-# UUID          Group Name
-False 	Non-Interactive Users
-36dcee8348dd6caeeca19d9ebb4580077ea9f6ca       	centos-opstools/skydive-core
-88491f62d524d8d7d4bd6b6ad3d8997366456e98        	centos-opstools/skydive-ptl
-global:Registered-Users		Registered Users
+# UUID                                  	Group Name
+#
+757c85abcd9ba70f7b7b0fd5a0a43e7506f820c5	centos-opstools/ptl
+b60725751ff1c8f5f13106753f5233e2ea34f818	centos-opstools/core
+global:Registered-Users                 	Registered Users
