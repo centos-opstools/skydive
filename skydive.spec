@@ -9,7 +9,7 @@
 %define gotest() go test -compiler gc -ldflags "${LDFLAGS:-}" %{?**};
 %endif
 
-%{!?tagversion:%global tagversion 0.10.0}
+%{!?tagversion:%global tagversion 0.11.0}
 
 # commit or tagversion need to be defined on command line
 %if %{defined commit}
@@ -21,7 +21,7 @@
 %define source %{tagversion}
 %endif
 
-%{!?source:%global source 0.10.0}
+%{!?source:%global source 0.11.0}
 %{!?tag:%global tag 1}
 
 Name:           skydive
@@ -36,6 +36,7 @@ BuildRequires:  libpcap-devel libxml2-devel
 
 # This is used by the specfile-update-bundles script to automatically
 # generate the list of the Go libraries bundled into the Skydive binaries
+Provides: bundled(golang(github.com/Microsoft/go-winio)) = fff283ad5116362ca252298cfc9b95828956d85d
 Provides: bundled(golang(github.com/Sirupsen/logrus)) = 4b6ea7319e214d98c938f12692336f7ca9348d6b
 Provides: bundled(golang(github.com/abbot/go-http-auth)) = ca62df34b58d26b6a064246c21c0a18f97813173
 Provides: bundled(golang(github.com/araddon/gou)) = 0c2ab7394d785afff14c983fedce4be70ccc431f
@@ -100,23 +101,24 @@ Provides: bundled(golang(github.com/coreos/go-semver)) = 8ab6407b697782a06568d4b
 Provides: bundled(golang(github.com/coreos/go-semver/semver)) = 8ab6407b697782a06568d4b7f1db25550ec2e4c6
 Provides: bundled(golang(github.com/coreos/go-systemd/journal)) = 7b2428fec40033549c68f54e26e89e7ca9a9ce31
 Provides: bundled(golang(github.com/coreos/pkg/capnslog)) = 66fe44ad037ccb80329115cb4db0dbe8e9beb03a
-Provides: bundled(golang(github.com/docker/distribution/digest)) = bfa0a9c0973b5026d2e942dec29115c120e7f731
-Provides: bundled(golang(github.com/docker/distribution/reference)) = 47d14555c02463c062e920198f3aeb2fcd6bcdb4
-Provides: bundled(golang(github.com/docker/engine-api/client)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/client/transport)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/client/transport/cancellable)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types/blkiodev)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types/container)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types/events)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types/filters)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types/network)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types/reference)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types/registry)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types/strslice)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types/swarm)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types/time)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
-Provides: bundled(golang(github.com/docker/engine-api/types/versions)) = 16c66e864c3c2f2dc8c35276232aafe9828c88bc
+Provides: bundled(golang(github.com/docker/distribution/digest)) = 325b0804fef3a66309d962357aac3c2ce3f4d329
+Provides: bundled(golang(github.com/docker/distribution/reference)) = 325b0804fef3a66309d962357aac3c2ce3f4d329
+Provides: bundled(golang(github.com/docker/docker/api/types)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/blkiodev)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/container)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/events)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/filters)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/mount)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/network)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/reference)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/registry)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/strslice)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/swarm)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/time)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/versions)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/api/types/volume)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/client)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
+Provides: bundled(golang(github.com/docker/docker/pkg/tlsconfig)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
 Provides: bundled(golang(github.com/docker/go-connections/nat)) = 990a1a1a70b0da4c4cb70e117971a4f0babfbf1a
 Provides: bundled(golang(github.com/docker/go-connections/sockets)) = 990a1a1a70b0da4c4cb70e117971a4f0babfbf1a
 Provides: bundled(golang(github.com/docker/go-connections/tlsconfig)) = 990a1a1a70b0da4c4cb70e117971a4f0babfbf1a
@@ -190,6 +192,7 @@ Provides: bundled(golang(github.com/opencontainers/runc/libcontainer/user)) = 8f
 Provides: bundled(golang(github.com/pelletier/go-buffruneio)) = df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d
 Provides: bundled(golang(github.com/pelletier/go-toml)) = 45932ad32dfdd20826f5671da37a5f3ce9f26a8d
 Provides: bundled(golang(github.com/peterh/liner)) = 8975875355a81d612fafb9f5a6037bdcc2d9b073
+Provides: bundled(golang(github.com/pkg/errors)) = ff09b135c25aae272398c51a07235b90a75aa4f0
 Provides: bundled(golang(github.com/pkg/sftp)) = e84cc8c755ca39b7b64f510fe1fffc1b51f210a5
 Provides: bundled(golang(github.com/pmylund/go-cache)) = a122e14c4b8ee69022f62f24ba85cb36ce844366
 Provides: bundled(golang(github.com/prometheus/client_golang/prometheus)) = 18acf9993a863f4c4b40612e19cdd243e7c86831
@@ -216,10 +219,17 @@ Provides: bundled(golang(github.com/spf13/jwalterweatherman)) = d00654080cddbd2b
 Provides: bundled(golang(github.com/spf13/pflag)) = c7e63cf4530bcd3ba943729cee0efeff2ebea63f
 Provides: bundled(golang(github.com/spf13/viper)) = 382f87b929b84ce13e9c8a375a4b217f224e6c65
 Provides: bundled(golang(github.com/spf13/viper/remote)) = 382f87b929b84ce13e9c8a375a4b217f224e6c65
+Provides: bundled(golang(github.com/tebeka/selenium)) = 657e45ec600f26e76da253936c1f2adb6978ff72
+Provides: bundled(golang(github.com/tebeka/selenium/chrome)) = 657e45ec600f26e76da253936c1f2adb6978ff72
+Provides: bundled(golang(github.com/tebeka/selenium/firefox)) = 657e45ec600f26e76da253936c1f2adb6978ff72
+Provides: bundled(golang(github.com/tebeka/selenium/internal/zip)) = 657e45ec600f26e76da253936c1f2adb6978ff72
 Provides: bundled(golang(github.com/ugorji/go/codec)) = b94837a2404ab90efe9289e77a70694c355739cb
 Provides: bundled(golang(github.com/vishvananda/netlink)) = ebdfb7402004b397e6573c71132160d8e23cc12a
 Provides: bundled(golang(github.com/vishvananda/netlink/nl)) = ebdfb7402004b397e6573c71132160d8e23cc12a
 Provides: bundled(golang(github.com/vishvananda/netns)) = 604eaf189ee867d8c147fafc28def2394e878d25
+Provides: bundled(golang(github.com/xeipuuv/gojsonpointer)) = 6fe8760cad3569743d51ddbb243b26f8456742dc
+Provides: bundled(golang(github.com/xeipuuv/gojsonreference)) = e02fc20de94c78484cd5ffb007f8af96be030a45
+Provides: bundled(golang(github.com/xeipuuv/gojsonschema)) = 702b404897d4364af44dc8dcabc9815947942325
 Provides: bundled(golang(github.com/xiang90/probing)) = 6a0cc1ae81b4cc11db5e491e030e4b98fba79c19
 Provides: bundled(golang(github.com/xordataexchange/crypt/backend)) = 749e360c8f236773f28fc6d3ddfce4a470795227
 Provides: bundled(golang(github.com/xordataexchange/crypt/backend/consul)) = 749e360c8f236773f28fc6d3ddfce4a470795227
@@ -239,12 +249,14 @@ Provides: bundled(golang(golang.org/x/crypto/openpgp/s2k)) = 1f22c0103821b939093
 Provides: bundled(golang(golang.org/x/crypto/ssh)) = 1f22c0103821b9390939b6776727195525381532
 Provides: bundled(golang(golang.org/x/net/bpf)) = a6577fac2d73be281a500b310739095313165611
 Provides: bundled(golang(golang.org/x/net/context)) = 6acef71eb69611914f7a30939ea9f6e194c78172
+Provides: bundled(golang(golang.org/x/net/context/ctxhttp)) = ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d
 Provides: bundled(golang(golang.org/x/net/http2)) = 6acef71eb69611914f7a30939ea9f6e194c78172
 Provides: bundled(golang(golang.org/x/net/http2/hpack)) = 6acef71eb69611914f7a30939ea9f6e194c78172
 Provides: bundled(golang(golang.org/x/net/internal/timeseries)) = 6acef71eb69611914f7a30939ea9f6e194c78172
 Provides: bundled(golang(golang.org/x/net/proxy)) = 6acef71eb69611914f7a30939ea9f6e194c78172
 Provides: bundled(golang(golang.org/x/net/trace)) = 6acef71eb69611914f7a30939ea9f6e194c78172
 Provides: bundled(golang(golang.org/x/sys/unix)) = 99f16d856c9836c42d24e7ab64ea72916925fa97
+Provides: bundled(golang(golang.org/x/sys/windows)) = 9a7256cb28ed514b4e1e5f68959914c4c28a92e0
 Provides: bundled(golang(golang.org/x/text/transform)) = 02704b6b714738b763ba478766eb55a4b4851cd4
 Provides: bundled(golang(golang.org/x/text/unicode/norm)) = 02704b6b714738b763ba478766eb55a4b4851cd4
 Provides: bundled(golang(google.golang.org/grpc)) = b7f1379d3cbbbeb2ca3405852012e237aa05459e
@@ -308,6 +320,7 @@ flows informations will be captured.
 export GOPATH=%{_builddir}/skydive-%{source}
 export GO15VENDOREXPERIMENT=1
 %gobuild -o bin/skydive %{import_path}
+go run cmd/completion/completion.go
 
 %install
 export GOPATH=%{_builddir}/skydive-%{source}
@@ -318,6 +331,7 @@ do
   install -D -m 644 contrib/packaging/rpm/skydive-${bin}.sysconfig %{buildroot}/%{_sysconfdir}/sysconfig/skydive-${bin}
 done
 install -D -m 644 etc/skydive.yml.default %{buildroot}/%{_sysconfdir}/skydive/skydive.yml
+install -D -m 644 skydive-bash-completion.sh %{buildroot}/%{_sysconfdir}/bash_completion.d/skydive-bash-completion.sh
 
 %post agent
 %systemd_post %{basename:%{name}-agent.service}
@@ -345,6 +359,7 @@ install -D -m 644 etc/skydive.yml.default %{buildroot}/%{_sysconfdir}/skydive/sk
 %files
 %doc README.md LICENSE CHANGELOG.md
 %{_bindir}/skydive
+%{_sysconfdir}/bash_completion.d/skydive-bash-completion.sh
 %config(noreplace) %{_sysconfdir}/skydive/skydive.yml
 
 %files agent
@@ -356,7 +371,10 @@ install -D -m 644 etc/skydive.yml.default %{buildroot}/%{_sysconfdir}/skydive/sk
 %{_unitdir}/skydive-analyzer.service
 
 %changelog
-* Fri Mar 30 2017 Sylvain Baubeau <sbaubeau@redhat.com> - 0.10.0-1
+* Fri May 5 2017 Sylvain Baubeau <sbaubeau@redhat.com> - 0.11.0-1
+- Bump to version 0.11.0
+
+* Thu Mar 30 2017 Sylvain Baubeau <sbaubeau@redhat.com> - 0.10.0-1
 - Bump to version 0.10.0
 
 * Fri Jan 27 2017 Sylvain Baubeau <sbaubeau@redhat.com> - 0.9.0-1
