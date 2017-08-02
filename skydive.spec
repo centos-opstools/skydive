@@ -9,7 +9,7 @@
 %define gotest() go test -compiler gc -ldflags "${LDFLAGS:-}" %{?**};
 %endif
 
-%{!?tagversion:%global tagversion 0.11.0}
+%{!?tagversion:%global tagversion 0.12.0}
 
 # commit or tagversion need to be defined on command line
 %if %{defined commit}
@@ -21,7 +21,7 @@
 %define source %{tagversion}
 %endif
 
-%{!?source:%global source 0.11.0}
+%{!?source:%global source 0.12.0}
 %{!?tag:%global tag 1}
 
 Name:           skydive
@@ -101,6 +101,7 @@ Provides: bundled(golang(github.com/coreos/go-semver)) = 8ab6407b697782a06568d4b
 Provides: bundled(golang(github.com/coreos/go-semver/semver)) = 8ab6407b697782a06568d4b7f1db25550ec2e4c6
 Provides: bundled(golang(github.com/coreos/go-systemd/journal)) = 7b2428fec40033549c68f54e26e89e7ca9a9ce31
 Provides: bundled(golang(github.com/coreos/pkg/capnslog)) = 66fe44ad037ccb80329115cb4db0dbe8e9beb03a
+Provides: bundled(golang(github.com/davecgh/go-spew/spew)) = 346938d642f2ec3594ed81d874461961cd0faa76
 Provides: bundled(golang(github.com/docker/distribution/digest)) = 325b0804fef3a66309d962357aac3c2ce3f4d329
 Provides: bundled(golang(github.com/docker/distribution/reference)) = 325b0804fef3a66309d962357aac3c2ce3f4d329
 Provides: bundled(golang(github.com/docker/docker/api/types)) = c6d412e329c85f32a4b2269b49aaa0794affcf88
@@ -130,11 +131,10 @@ Provides: bundled(golang(github.com/gogo/protobuf/proto)) = ff05bbbb0ff143cc11fc
 Provides: bundled(golang(github.com/golang/protobuf/jsonpb)) = c3cefd437628a0b7d31b34fe44b3a7a540e98527
 Provides: bundled(golang(github.com/golang/protobuf/proto)) = c3cefd437628a0b7d31b34fe44b3a7a540e98527
 Provides: bundled(golang(github.com/google/btree)) = cc6329d4279e3f025a53a83c397d2339b5705c45
-Provides: bundled(golang(github.com/google/gopacket)) = b28ce7147a06b23a37cacd4bf2119f9da8dd51c4
-Provides: bundled(golang(github.com/google/gopacket/afpacket)) = b28ce7147a06b23a37cacd4bf2119f9da8dd51c4
-Provides: bundled(golang(github.com/google/gopacket/layers)) = b28ce7147a06b23a37cacd4bf2119f9da8dd51c4
-Provides: bundled(golang(github.com/google/gopacket/pcap)) = b28ce7147a06b23a37cacd4bf2119f9da8dd51c4
-Provides: bundled(golang(github.com/google/gopacket/pcapgo)) = b28ce7147a06b23a37cacd4bf2119f9da8dd51c4
+Provides: bundled(golang(github.com/google/gopacket)) = f10e8ef82a38b32acce3de1d6cec5453a2a28c74
+Provides: bundled(golang(github.com/google/gopacket/layers)) = f10e8ef82a38b32acce3de1d6cec5453a2a28c74
+Provides: bundled(golang(github.com/google/gopacket/pcap)) = f10e8ef82a38b32acce3de1d6cec5453a2a28c74
+Provides: bundled(golang(github.com/google/gopacket/pcapgo)) = f10e8ef82a38b32acce3de1d6cec5453a2a28c74
 Provides: bundled(golang(github.com/gophercloud/gophercloud)) = 19e713b71ea0ba4c56057127841ad792fe249782
 Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack)) = 19e713b71ea0ba4c56057127841ad792fe249782
 Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/identity/v2/tenants)) = 19e713b71ea0ba4c56057127841ad792fe249782
@@ -175,9 +175,9 @@ Provides: bundled(golang(github.com/jbowtie/gokogiri/xpath)) = e2644e49d5b4a4d23
 Provides: bundled(golang(github.com/jonboulle/clockwork)) = ed104f61ea4877bea08af6f759805674861e968d
 Provides: bundled(golang(github.com/kardianos/osext)) = c2c54e542fb797ad986b31721e1baedf214ca413
 Provides: bundled(golang(github.com/kr/fs)) = 2788f0dbd16903de03cb8186e5c7d97b69ad387b
-Provides: bundled(golang(github.com/lebauce/elastigo)) = 83f25ddf31290323a0a9dd72117be65a43705f2f
-Provides: bundled(golang(github.com/lebauce/elastigo/lib)) = 83f25ddf31290323a0a9dd72117be65a43705f2f
 Provides: bundled(golang(github.com/magiconair/properties)) = c81f9d71af8f8cba1466501d30326b99a4e56c19
+Provides: bundled(golang(github.com/mattbaird/elastigo)) = 9dc64d2def002a03e8cbe3c4720652a5bc5ff1c0
+Provides: bundled(golang(github.com/mattbaird/elastigo/lib)) = 9dc64d2def002a03e8cbe3c4720652a5bc5ff1c0
 Provides: bundled(golang(github.com/mattn/go-runewidth)) = d6bea18f789704b5f83375793155289da36a3c7f
 Provides: bundled(golang(github.com/matttproud/golang_protobuf_extensions/pbutil)) = d0c3fe89de86839aecf2e0579c40ba3bb336a453
 Provides: bundled(golang(github.com/mitchellh/go-homedir)) = 756f7b183b7ab78acdbbee5c7f392838ed459dda
@@ -187,7 +187,6 @@ Provides: bundled(golang(github.com/nlewo/contrail-introspect-cli/collection)) =
 Provides: bundled(golang(github.com/nlewo/contrail-introspect-cli/descriptions)) = d18f119e1cc10d72c9bcacdc680c818dede04f69
 Provides: bundled(golang(github.com/nlewo/contrail-introspect-cli/utils)) = 26910455eebfad0eccdeb8b2e0b342f1b371e82b
 Provides: bundled(golang(github.com/nu7hatch/gouuid)) = 179d4d0c4d8d407a32af483c2354df1d2c91e6c3
-Provides: bundled(golang(github.com/op/go-logging)) = d2e44aa77b7195c0ef782189985dd8550e22e4de
 Provides: bundled(golang(github.com/opencontainers/runc/libcontainer/user)) = 8fa5343b0058459296399a89bc532aa5508de28d
 Provides: bundled(golang(github.com/pelletier/go-buffruneio)) = df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d
 Provides: bundled(golang(github.com/pelletier/go-toml)) = 45932ad32dfdd20826f5671da37a5f3ce9f26a8d
@@ -236,6 +235,14 @@ Provides: bundled(golang(github.com/xordataexchange/crypt/backend/consul)) = 749
 Provides: bundled(golang(github.com/xordataexchange/crypt/backend/etcd)) = 749e360c8f236773f28fc6d3ddfce4a470795227
 Provides: bundled(golang(github.com/xordataexchange/crypt/config)) = 749e360c8f236773f28fc6d3ddfce4a470795227
 Provides: bundled(golang(github.com/xordataexchange/crypt/encoding/secconf)) = 749e360c8f236773f28fc6d3ddfce4a470795227
+Provides: bundled(golang(go.uber.org/atomic)) = 0506d69f5564c56e25797bf7183c28921d4c6360
+Provides: bundled(golang(go.uber.org/multierr)) = 3c4937480c32f4c13a875a1829af76c98ca3d40a
+Provides: bundled(golang(go.uber.org/zap)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
+Provides: bundled(golang(go.uber.org/zap/buffer)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
+Provides: bundled(golang(go.uber.org/zap/internal/bufferpool)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
+Provides: bundled(golang(go.uber.org/zap/internal/color)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
+Provides: bundled(golang(go.uber.org/zap/internal/exit)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
+Provides: bundled(golang(go.uber.org/zap/zapcore)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
 Provides: bundled(golang(golang.org/x/crypto/bcrypt)) = 1f22c0103821b9390939b6776727195525381532
 Provides: bundled(golang(golang.org/x/crypto/blowfish)) = 1f22c0103821b9390939b6776727195525381532
 Provides: bundled(golang(golang.org/x/crypto/cast5)) = 1f22c0103821b9390939b6776727195525381532
@@ -371,6 +378,9 @@ install -D -m 644 skydive-bash-completion.sh %{buildroot}/%{_sysconfdir}/bash_co
 %{_unitdir}/skydive-analyzer.service
 
 %changelog
+* Fri Jul 28 2017 Sylvain Baubeau <sbaubeau@redhat.com> - 0.12.0-1
+- Bump to version 0.12.0
+
 * Fri May 5 2017 Sylvain Baubeau <sbaubeau@redhat.com> - 0.11.0-1
 - Bump to version 0.11.0
 
