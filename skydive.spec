@@ -9,7 +9,7 @@
 %define gotest() go test -compiler gc -ldflags "${LDFLAGS:-}" %{?**};
 %endif
 
-%{!?tagversion:%global tagversion 0.12.0}
+%{!?tagversion:%global tagversion 0.13.0}
 
 # commit or tagversion need to be defined on command line
 %if %{defined commit}
@@ -21,7 +21,7 @@
 %define source %{tagversion}
 %endif
 
-%{!?source:%global source 0.12.0}
+%{!?source:%global source 0.13.0}
 %{!?tag:%global tag 1}
 
 Name:           skydive
@@ -131,21 +131,21 @@ Provides: bundled(golang(github.com/gogo/protobuf/proto)) = ff05bbbb0ff143cc11fc
 Provides: bundled(golang(github.com/golang/protobuf/jsonpb)) = c3cefd437628a0b7d31b34fe44b3a7a540e98527
 Provides: bundled(golang(github.com/golang/protobuf/proto)) = c3cefd437628a0b7d31b34fe44b3a7a540e98527
 Provides: bundled(golang(github.com/google/btree)) = cc6329d4279e3f025a53a83c397d2339b5705c45
-Provides: bundled(golang(github.com/google/gopacket)) = f10e8ef82a38b32acce3de1d6cec5453a2a28c74
-Provides: bundled(golang(github.com/google/gopacket/layers)) = f10e8ef82a38b32acce3de1d6cec5453a2a28c74
-Provides: bundled(golang(github.com/google/gopacket/pcap)) = f10e8ef82a38b32acce3de1d6cec5453a2a28c74
-Provides: bundled(golang(github.com/google/gopacket/pcapgo)) = f10e8ef82a38b32acce3de1d6cec5453a2a28c74
-Provides: bundled(golang(github.com/gophercloud/gophercloud)) = 19e713b71ea0ba4c56057127841ad792fe249782
-Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack)) = 19e713b71ea0ba4c56057127841ad792fe249782
-Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/identity/v2/tenants)) = 19e713b71ea0ba4c56057127841ad792fe249782
-Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/identity/v2/tokens)) = 19e713b71ea0ba4c56057127841ad792fe249782
-Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/identity/v3/tokens)) = 19e713b71ea0ba4c56057127841ad792fe249782
-Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/provider)) = 19e713b71ea0ba4c56057127841ad792fe249782
-Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/networking/v2/networks)) = 19e713b71ea0ba4c56057127841ad792fe249782
-Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/networking/v2/ports)) = 19e713b71ea0ba4c56057127841ad792fe249782
-Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/networking/v2/subnets)) = 19e713b71ea0ba4c56057127841ad792fe249782
-Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/utils)) = 19e713b71ea0ba4c56057127841ad792fe249782
-Provides: bundled(golang(github.com/gophercloud/gophercloud/pagination)) = 19e713b71ea0ba4c56057127841ad792fe249782
+Provides: bundled(golang(github.com/google/gopacket)) = 93b782132903d1846aab74cb1f62e6138564949f
+Provides: bundled(golang(github.com/google/gopacket/layers)) = 93b782132903d1846aab74cb1f62e6138564949f
+Provides: bundled(golang(github.com/google/gopacket/pcap)) = 93b782132903d1846aab74cb1f62e6138564949f
+Provides: bundled(golang(github.com/google/gopacket/pcapgo)) = 93b782132903d1846aab74cb1f62e6138564949f
+Provides: bundled(golang(github.com/gophercloud/gophercloud)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
+Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
+Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/identity/v2/tenants)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
+Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/identity/v2/tokens)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
+Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/identity/v3/tokens)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
+Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/networking/v2/extensions/provider)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
+Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/networking/v2/networks)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
+Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/networking/v2/ports)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
+Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/networking/v2/subnets)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
+Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/utils)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
+Provides: bundled(golang(github.com/gophercloud/gophercloud/pagination)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
 Provides: bundled(golang(github.com/gorilla/context)) = 1c83b3eabd45b6d76072b66b746c20815fb2872d
 Provides: bundled(golang(github.com/gorilla/mux)) = 9c068cf16d982f8bd444b8c352acbeec34c4fe5b
 Provides: bundled(golang(github.com/gorilla/websocket)) = 844dd6d40e1a9215ef4c8a204bfc839fcf5dd5dd
@@ -193,7 +193,7 @@ Provides: bundled(golang(github.com/pelletier/go-toml)) = 45932ad32dfdd20826f567
 Provides: bundled(golang(github.com/peterh/liner)) = 8975875355a81d612fafb9f5a6037bdcc2d9b073
 Provides: bundled(golang(github.com/pkg/errors)) = ff09b135c25aae272398c51a07235b90a75aa4f0
 Provides: bundled(golang(github.com/pkg/sftp)) = e84cc8c755ca39b7b64f510fe1fffc1b51f210a5
-Provides: bundled(golang(github.com/pmylund/go-cache)) = a122e14c4b8ee69022f62f24ba85cb36ce844366
+Provides: bundled(golang(github.com/pmylund/go-cache)) = a3647f8e31d79543b2d0f0ae2fe5c379d72cedc0
 Provides: bundled(golang(github.com/prometheus/client_golang/prometheus)) = 18acf9993a863f4c4b40612e19cdd243e7c86831
 Provides: bundled(golang(github.com/prometheus/client_model/go)) = fa8ad6fec33561be4280a8f0514318c79d7f6cb6
 Provides: bundled(golang(github.com/prometheus/common/expfmt)) = 23070236b1ebff452f494ae831569545c2b61d26
@@ -320,6 +320,14 @@ Requires(postun): systemd
 The Skydive agent has to be started on each node where the topology and
 flows informations will be captured.
 
+%package ansible
+Summary:          Skydive ansible recipes
+Requires:         %{name} = %{version}-%{release}
+Requires:         ansible
+
+%description ansible
+Ansible recipes to deploy Skydive
+
 %prep
 %setup -q -n skydive-%{source}/src/%{import_path}
 
@@ -327,7 +335,7 @@ flows informations will be captured.
 export GOPATH=%{_builddir}/skydive-%{source}
 export GO15VENDOREXPERIMENT=1
 %gobuild -o bin/skydive %{import_path}
-go run cmd/completion/completion.go
+bin/skydive bash-completion
 
 %install
 export GOPATH=%{_builddir}/skydive-%{source}
@@ -339,6 +347,8 @@ do
 done
 install -D -m 644 etc/skydive.yml.default %{buildroot}/%{_sysconfdir}/skydive/skydive.yml
 install -D -m 644 skydive-bash-completion.sh %{buildroot}/%{_sysconfdir}/bash_completion.d/skydive-bash-completion.sh
+install -d -m 755 %{buildroot}/%{_datadir}/skydive-ansible
+cp -R contrib/ansible/* %{buildroot}/%{_datadir}/skydive-ansible/
 
 %post agent
 %systemd_post %{basename:%{name}-agent.service}
@@ -377,7 +387,14 @@ install -D -m 644 skydive-bash-completion.sh %{buildroot}/%{_sysconfdir}/bash_co
 %config(noreplace) %{_sysconfdir}/sysconfig/skydive-analyzer
 %{_unitdir}/skydive-analyzer.service
 
+%files ansible
+%{_datadir}/skydive-ansible
+
 %changelog
+* Wed Oct 11 2017 Sylvain Baubeau <sbaubeau@redhat.com> - 0.13.0-1
+- Bump to version 0.13.0
+- Add skydive-ansible subpackage
+
 * Fri Jul 28 2017 Sylvain Baubeau <sbaubeau@redhat.com> - 0.12.0-1
 - Bump to version 0.12.0
 
