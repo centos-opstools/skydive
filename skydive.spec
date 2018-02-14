@@ -9,8 +9,6 @@
 %define gotest() go test -compiler gc -ldflags "${LDFLAGS:-}" %{?**};
 %endif
 
-%{!?tagversion:%global tagversion 0.13.0}
-
 # commit or tagversion need to be defined on command line
 %if %{defined commit}
 %define source %{commit}
@@ -21,7 +19,8 @@
 %define source %{tagversion}
 %endif
 
-%{!?source:%global source 0.13.0}
+%{!?tagversion:%global tagversion 0.14.0}
+%{!?source:%global source 0.14.0}
 %{!?tag:%global tag 1}
 
 Name:           skydive
@@ -166,6 +165,12 @@ Provides: bundled(golang(github.com/hashicorp/hcl/json/scanner)) = 1c284ec98f4b3
 Provides: bundled(golang(github.com/hashicorp/hcl/json/token)) = 1c284ec98f4b398443cbabb0d9197f7f4cc0077c
 Provides: bundled(golang(github.com/hydrogen18/stoppableListener)) = dadc9ccc400c712e5a316107a5c462863919e579
 Provides: bundled(golang(github.com/inconshreveable/mousetrap)) = 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+Provides: bundled(golang(github.com/intel-go/yanff/asm)) = 35804adce65005f76409327527e4e256569cacc6
+Provides: bundled(golang(github.com/intel-go/yanff/common)) = 35804adce65005f76409327527e4e256569cacc6
+Provides: bundled(golang(github.com/intel-go/yanff/flow)) = 35804adce65005f76409327527e4e256569cacc6
+Provides: bundled(golang(github.com/intel-go/yanff/low)) = 35804adce65005f76409327527e4e256569cacc6
+Provides: bundled(golang(github.com/intel-go/yanff/packet)) = 35804adce65005f76409327527e4e256569cacc6
+Provides: bundled(golang(github.com/intel-go/yanff/scheduler)) = 35804adce65005f76409327527e4e256569cacc6
 Provides: bundled(golang(github.com/jbowtie/gokogiri)) = e2644e49d5b4a4d2382d1a4b28dfbb313a4ffb0c
 Provides: bundled(golang(github.com/jbowtie/gokogiri/help)) = e2644e49d5b4a4d2382d1a4b28dfbb313a4ffb0c
 Provides: bundled(golang(github.com/jbowtie/gokogiri/html)) = e2644e49d5b4a4d2382d1a4b28dfbb313a4ffb0c
@@ -223,8 +228,8 @@ Provides: bundled(golang(github.com/tebeka/selenium/chrome)) = 657e45ec600f26e76
 Provides: bundled(golang(github.com/tebeka/selenium/firefox)) = 657e45ec600f26e76da253936c1f2adb6978ff72
 Provides: bundled(golang(github.com/tebeka/selenium/internal/zip)) = 657e45ec600f26e76da253936c1f2adb6978ff72
 Provides: bundled(golang(github.com/ugorji/go/codec)) = b94837a2404ab90efe9289e77a70694c355739cb
-Provides: bundled(golang(github.com/vishvananda/netlink)) = ebdfb7402004b397e6573c71132160d8e23cc12a
-Provides: bundled(golang(github.com/vishvananda/netlink/nl)) = ebdfb7402004b397e6573c71132160d8e23cc12a
+Provides: bundled(golang(github.com/vishvananda/netlink)) = b2de5d10e38ecce8607e6b438b6d174f389a004e
+Provides: bundled(golang(github.com/vishvananda/netlink/nl)) = b2de5d10e38ecce8607e6b438b6d174f389a004e
 Provides: bundled(golang(github.com/vishvananda/netns)) = 604eaf189ee867d8c147fafc28def2394e878d25
 Provides: bundled(golang(github.com/xeipuuv/gojsonpointer)) = 6fe8760cad3569743d51ddbb243b26f8456742dc
 Provides: bundled(golang(github.com/xeipuuv/gojsonreference)) = e02fc20de94c78484cd5ffb007f8af96be030a45
@@ -237,12 +242,12 @@ Provides: bundled(golang(github.com/xordataexchange/crypt/config)) = 749e360c8f2
 Provides: bundled(golang(github.com/xordataexchange/crypt/encoding/secconf)) = 749e360c8f236773f28fc6d3ddfce4a470795227
 Provides: bundled(golang(go.uber.org/atomic)) = 0506d69f5564c56e25797bf7183c28921d4c6360
 Provides: bundled(golang(go.uber.org/multierr)) = 3c4937480c32f4c13a875a1829af76c98ca3d40a
-Provides: bundled(golang(go.uber.org/zap)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
-Provides: bundled(golang(go.uber.org/zap/buffer)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
-Provides: bundled(golang(go.uber.org/zap/internal/bufferpool)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
-Provides: bundled(golang(go.uber.org/zap/internal/color)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
-Provides: bundled(golang(go.uber.org/zap/internal/exit)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
-Provides: bundled(golang(go.uber.org/zap/zapcore)) = 4fb11c3880cea6f9634f5f22d6025e4432542fc3
+Provides: bundled(golang(go.uber.org/zap)) = 35aad584952c3e7020db7b839f6b102de6271f89
+Provides: bundled(golang(go.uber.org/zap/buffer)) = 35aad584952c3e7020db7b839f6b102de6271f89
+Provides: bundled(golang(go.uber.org/zap/internal/bufferpool)) = 35aad584952c3e7020db7b839f6b102de6271f89
+Provides: bundled(golang(go.uber.org/zap/internal/color)) = 35aad584952c3e7020db7b839f6b102de6271f89
+Provides: bundled(golang(go.uber.org/zap/internal/exit)) = 35aad584952c3e7020db7b839f6b102de6271f89
+Provides: bundled(golang(go.uber.org/zap/zapcore)) = 35aad584952c3e7020db7b839f6b102de6271f89
 Provides: bundled(golang(golang.org/x/crypto/bcrypt)) = 1f22c0103821b9390939b6776727195525381532
 Provides: bundled(golang(golang.org/x/crypto/blowfish)) = 1f22c0103821b9390939b6776727195525381532
 Provides: bundled(golang(golang.org/x/crypto/cast5)) = 1f22c0103821b9390939b6776727195525381532
@@ -284,7 +289,7 @@ Provides: bundled(golang(gopkg.in/yaml.v2)) = bef53efd0c76e49e6de55ead051f886bea
 # e.g. el6 has ppc64 arch without gcc-go, so EA tag is required
 ExclusiveArch:  %{?go_arches:%{go_arches}}%{!?go_arches:%{ix86} x86_64 %{arm}}
 # If go_compiler is not set to 1, there is no virtual provide. Use golang instead.
-BuildRequires:  %{?go_compiler:compiler(go-compiler)}%{!?go_compiler:golang} >= 1.5
+BuildRequires:  %{?go_compiler:compiler(go-compiler)}%{!?go_compiler:golang} >= 1.8
 
 %description
 Skydive is an open source real-time network topology and protocols analyzer.
@@ -296,8 +301,7 @@ central agent for further analysis. All the informations are stored in an
 Elasticsearch database.
 
 Skydive is SDN-agnostic but provides SDN drivers in order to enhance the
-topology and flows informations. Currently only the Neutron driver is provided
-but more drivers will come soon.
+topology and flows informations.
 
 %package analyzer
 Summary:          Skydive analyzer
@@ -391,6 +395,9 @@ cp -R contrib/ansible/* %{buildroot}/%{_datadir}/skydive-ansible/
 %{_datadir}/skydive-ansible
 
 %changelog
+* Tue Nov 14 2017 Sylvain Baubeau <sbaubeau@redhat.com> - 0.14.0-1
+- Bump to version 0.14.0
+
 * Wed Oct 11 2017 Sylvain Baubeau <sbaubeau@redhat.com> - 0.13.0-1
 - Bump to version 0.13.0
 - Add skydive-ansible subpackage
@@ -434,3 +441,4 @@ cp -R contrib/ansible/* %{buildroot}/%{_datadir}/skydive-ansible/
 
 * Mon Feb 1 2016 Sylvain Baubeau <sbaubeau@redhat.com> - 0.1.0-1
 - Initial release of RPM
+
