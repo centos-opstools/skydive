@@ -19,8 +19,8 @@
 %define source %{tagversion}
 %endif
 
-%{!?tagversion:%global tagversion 0.14.0}
-%{!?source:%global source 0.14.0}
+%{!?tagversion:%global tagversion 0.15.0}
+%{!?source:%global source 0.15.0}
 %{!?tag:%global tag 1}
 
 Name:           skydive
@@ -32,6 +32,7 @@ URL:            https://%{import_path}
 Source0:        https://%{import_path}/releases/download/v%{source}/skydive-%{source}.tar.gz
 BuildRequires:  systemd
 BuildRequires:  libpcap-devel libxml2-devel
+BuildRequires:  llvm clang kernel-headers
 
 # This is used by the specfile-update-bundles script to automatically
 # generate the list of the Go libraries bundled into the Skydive binaries
@@ -130,10 +131,10 @@ Provides: bundled(golang(github.com/gogo/protobuf/proto)) = ff05bbbb0ff143cc11fc
 Provides: bundled(golang(github.com/golang/protobuf/jsonpb)) = c3cefd437628a0b7d31b34fe44b3a7a540e98527
 Provides: bundled(golang(github.com/golang/protobuf/proto)) = c3cefd437628a0b7d31b34fe44b3a7a540e98527
 Provides: bundled(golang(github.com/google/btree)) = cc6329d4279e3f025a53a83c397d2339b5705c45
-Provides: bundled(golang(github.com/google/gopacket)) = 93b782132903d1846aab74cb1f62e6138564949f
-Provides: bundled(golang(github.com/google/gopacket/layers)) = 93b782132903d1846aab74cb1f62e6138564949f
-Provides: bundled(golang(github.com/google/gopacket/pcap)) = 93b782132903d1846aab74cb1f62e6138564949f
-Provides: bundled(golang(github.com/google/gopacket/pcapgo)) = 93b782132903d1846aab74cb1f62e6138564949f
+Provides: bundled(golang(github.com/google/gopacket)) = 67a21c4470a0598531a769727aef40b870ffa128
+Provides: bundled(golang(github.com/google/gopacket/layers)) = 67a21c4470a0598531a769727aef40b870ffa128
+Provides: bundled(golang(github.com/google/gopacket/pcap)) = 67a21c4470a0598531a769727aef40b870ffa128
+Provides: bundled(golang(github.com/google/gopacket/pcapgo)) = 67a21c4470a0598531a769727aef40b870ffa128
 Provides: bundled(golang(github.com/gophercloud/gophercloud)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
 Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
 Provides: bundled(golang(github.com/gophercloud/gophercloud/openstack/identity/v2/tenants)) = 849a2e71dd64dbfa2bd4be110ace68881802414b
@@ -171,6 +172,11 @@ Provides: bundled(golang(github.com/intel-go/yanff/flow)) = 35804adce65005f76409
 Provides: bundled(golang(github.com/intel-go/yanff/low)) = 35804adce65005f76409327527e4e256569cacc6
 Provides: bundled(golang(github.com/intel-go/yanff/packet)) = 35804adce65005f76409327527e4e256569cacc6
 Provides: bundled(golang(github.com/intel-go/yanff/scheduler)) = 35804adce65005f76409327527e4e256569cacc6
+Provides: bundled(golang(github.com/iovisor/gobpf/elf)) = dd767a9fd5f868874ed117811461410100cea403
+Provides: bundled(golang(github.com/iovisor/gobpf/elf/include)) = 78e59123840b27e16b7b4e7ca54f2ce9493b7271
+Provides: bundled(golang(github.com/iovisor/gobpf/pkg)) = 78e59123840b27e16b7b4e7ca54f2ce9493b7271
+Provides: bundled(golang(github.com/iovisor/gobpf/pkg/bpffs)) = dd767a9fd5f868874ed117811461410100cea403
+Provides: bundled(golang(github.com/iovisor/gobpf/pkg/cpuonline)) = dd767a9fd5f868874ed117811461410100cea403
 Provides: bundled(golang(github.com/jbowtie/gokogiri)) = e2644e49d5b4a4d2382d1a4b28dfbb313a4ffb0c
 Provides: bundled(golang(github.com/jbowtie/gokogiri/help)) = e2644e49d5b4a4d2382d1a4b28dfbb313a4ffb0c
 Provides: bundled(golang(github.com/jbowtie/gokogiri/html)) = e2644e49d5b4a4d2382d1a4b28dfbb313a4ffb0c
@@ -181,8 +187,8 @@ Provides: bundled(golang(github.com/jonboulle/clockwork)) = ed104f61ea4877bea08a
 Provides: bundled(golang(github.com/kardianos/osext)) = c2c54e542fb797ad986b31721e1baedf214ca413
 Provides: bundled(golang(github.com/kr/fs)) = 2788f0dbd16903de03cb8186e5c7d97b69ad387b
 Provides: bundled(golang(github.com/magiconair/properties)) = c81f9d71af8f8cba1466501d30326b99a4e56c19
-Provides: bundled(golang(github.com/mattbaird/elastigo)) = 9dc64d2def002a03e8cbe3c4720652a5bc5ff1c0
-Provides: bundled(golang(github.com/mattbaird/elastigo/lib)) = 9dc64d2def002a03e8cbe3c4720652a5bc5ff1c0
+Provides: bundled(golang(github.com/mattbaird/elastigo)) = 441c1531dca50a19990385930149f6785f78fe59
+Provides: bundled(golang(github.com/mattbaird/elastigo/lib)) = 441c1531dca50a19990385930149f6785f78fe59
 Provides: bundled(golang(github.com/mattn/go-runewidth)) = d6bea18f789704b5f83375793155289da36a3c7f
 Provides: bundled(golang(github.com/matttproud/golang_protobuf_extensions/pbutil)) = d0c3fe89de86839aecf2e0579c40ba3bb336a453
 Provides: bundled(golang(github.com/mitchellh/go-homedir)) = 756f7b183b7ab78acdbbee5c7f392838ed459dda
@@ -228,8 +234,8 @@ Provides: bundled(golang(github.com/tebeka/selenium/chrome)) = 657e45ec600f26e76
 Provides: bundled(golang(github.com/tebeka/selenium/firefox)) = 657e45ec600f26e76da253936c1f2adb6978ff72
 Provides: bundled(golang(github.com/tebeka/selenium/internal/zip)) = 657e45ec600f26e76da253936c1f2adb6978ff72
 Provides: bundled(golang(github.com/ugorji/go/codec)) = b94837a2404ab90efe9289e77a70694c355739cb
-Provides: bundled(golang(github.com/vishvananda/netlink)) = b2de5d10e38ecce8607e6b438b6d174f389a004e
-Provides: bundled(golang(github.com/vishvananda/netlink/nl)) = b2de5d10e38ecce8607e6b438b6d174f389a004e
+Provides: bundled(golang(github.com/vishvananda/netlink)) = 016ba6f67a12c03708643150afcfb1509be7747a
+Provides: bundled(golang(github.com/vishvananda/netlink/nl)) = 016ba6f67a12c03708643150afcfb1509be7747a
 Provides: bundled(golang(github.com/vishvananda/netns)) = 604eaf189ee867d8c147fafc28def2394e878d25
 Provides: bundled(golang(github.com/xeipuuv/gojsonpointer)) = 6fe8760cad3569743d51ddbb243b26f8456742dc
 Provides: bundled(golang(github.com/xeipuuv/gojsonreference)) = e02fc20de94c78484cd5ffb007f8af96be030a45
