@@ -9,43 +9,57 @@
 %define gotest() go test -compiler gc -ldflags "${LDFLAGS:-}" %{?**};
 %endif
 
-# commit or tagversion need to be defined on command line
-%if %{defined commit}
-%define source %{commit}
-%define tag 0.git%{commit}
+%define extracttag() %(eval "echo %1 | cut -s -d '-' -f 2-")
+%define extractversion() %(eval "echo %1 | cut -d '-' -f 1")
+%define normalize() %(eval "echo %1 | tr '-' '.'")
+
+%global selinuxtype targeted
+%global selinux_policyver 3.13.1-192
+%global moduletype contrib
+
+%if %{defined fullver}
+%define vertag %extracttag %{fullver}
+%if "%{vertag}" != ""
+%define tag %normalize 0.%{vertag}
+%endif
 %endif
 
-%if %{defined tagversion}
-%define source %{tagversion}
-%endif
-
-%{!?tagversion:%global tagversion 0.17.0}
-%{!?source:%global source 0.17.0}
+%{!?fullver:%global fullver 0.18.0}
+%define version %{extractversion %{fullver}}
 %{!?tag:%global tag 1}
 
 Name:           skydive
-Version:        %{tagversion}
+Version:        %{version}
 Release:        %{tag}%{?dist}
 Summary:        Real-time network topology and protocols analyzer.
 License:        ASL 2.0
 URL:            https://%{import_path}
-Source0:        https://%{import_path}/releases/download/v%{source}/skydive-%{source}.tar.gz
+Source0:        https://%{import_path}/releases/download/v%{version}/skydive-%{fullver}.tar.gz
 BuildRequires:  systemd
 BuildRequires:  libpcap-devel libxml2-devel
 BuildRequires:  llvm clang kernel-headers
+BuildRequires:  selinux-policy-devel, policycoreutils-devel
+Requires:       %{name}-selinux = %{version}-%{release}
 
 # This is used by the specfile-update-bundles script to automatically
 # generate the list of the Go libraries bundled into the Skydive binaries
+Provides: bundled(golang(github.com/Knetic/govaluate)) = 9aa49832a739dcd78a5542ff189fb82c3e423116
 Provides: bundled(golang(github.com/Microsoft/go-winio)) = fff283ad5116362ca252298cfc9b95828956d85d
 Provides: bundled(golang(github.com/PuerkitoBio/purell)) = fd18e053af8a4ff11039269006e8037ff374ce0e
 Provides: bundled(golang(github.com/PuerkitoBio/urlesc)) = de5bf2ad457846296e2031421a34e2568e304e35
 Provides: bundled(golang(github.com/Sirupsen/logrus)) = 4b6ea7319e214d98c938f12692336f7ca9348d6b
 Provides: bundled(golang(github.com/StackExchange/wmi)) = 5d049714c4a64225c3c79a7cf7d02f7fb5b96338
 Provides: bundled(golang(github.com/abbot/go-http-auth)) = ca62df34b58d26b6a064246c21c0a18f97813173
-Provides: bundled(golang(github.com/araddon/gou)) = 0c2ab7394d785afff14c983fedce4be70ccc431f
 Provides: bundled(golang(github.com/armon/consul-api)) = dcfedd50ed5334f96adee43fc88518a4f095e15c
 Provides: bundled(golang(github.com/beorn7/perks/quantile)) = b965b613227fddccbfffe13eae360ed3fa822f8d
-Provides: bundled(golang(github.com/bitly/go-hostpool)) = d0e59c22a56e8dadfed24f74f452cea5a52722d2
+Provides: bundled(golang(github.com/casbin/casbin)) = 3a17f2855cc12ad36fd614c590b9d18f46dfd65d
+Provides: bundled(golang(github.com/casbin/casbin/config)) = 3a17f2855cc12ad36fd614c590b9d18f46dfd65d
+Provides: bundled(golang(github.com/casbin/casbin/file-adapter)) = 3a17f2855cc12ad36fd614c590b9d18f46dfd65d
+Provides: bundled(golang(github.com/casbin/casbin/model)) = 3a17f2855cc12ad36fd614c590b9d18f46dfd65d
+Provides: bundled(golang(github.com/casbin/casbin/persist)) = 3a17f2855cc12ad36fd614c590b9d18f46dfd65d
+Provides: bundled(golang(github.com/casbin/casbin/rbac)) = 3a17f2855cc12ad36fd614c590b9d18f46dfd65d
+Provides: bundled(golang(github.com/casbin/casbin/rbac/default-role-manager)) = 3a17f2855cc12ad36fd614c590b9d18f46dfd65d
+Provides: bundled(golang(github.com/casbin/casbin/util)) = 3a17f2855cc12ad36fd614c590b9d18f46dfd65d
 Provides: bundled(golang(github.com/cenk/hub)) = 11382a9960d39b0ecda16fd01c424c11ff765a34
 Provides: bundled(golang(github.com/cenk/rpc2)) = 7ab76d2e88c77ca1a715756036d8264b2886acd2
 Provides: bundled(golang(github.com/cenk/rpc2/jsonrpc)) = 7ab76d2e88c77ca1a715756036d8264b2886acd2
@@ -173,7 +187,11 @@ Provides: bundled(golang(github.com/gogo/protobuf/sortkeys)) = 2adc21fd136931e03
 Provides: bundled(golang(github.com/golang/glog)) = 23def4e6c14b4da8ac2ed8007337bc5eb5007998
 Provides: bundled(golang(github.com/golang/protobuf/jsonpb)) = 925541529c1fa6821df4e44ce2723319eb2be768
 Provides: bundled(golang(github.com/golang/protobuf/proto)) = 925541529c1fa6821df4e44ce2723319eb2be768
+Provides: bundled(golang(github.com/golang/protobuf/protoc-gen-go)) = 925541529c1fa6821df4e44ce2723319eb2be768
 Provides: bundled(golang(github.com/golang/protobuf/protoc-gen-go/descriptor)) = 925541529c1fa6821df4e44ce2723319eb2be768
+Provides: bundled(golang(github.com/golang/protobuf/protoc-gen-go/generator)) = 925541529c1fa6821df4e44ce2723319eb2be768
+Provides: bundled(golang(github.com/golang/protobuf/protoc-gen-go/grpc)) = 925541529c1fa6821df4e44ce2723319eb2be768
+Provides: bundled(golang(github.com/golang/protobuf/protoc-gen-go/plugin)) = 925541529c1fa6821df4e44ce2723319eb2be768
 Provides: bundled(golang(github.com/golang/protobuf/ptypes)) = 925541529c1fa6821df4e44ce2723319eb2be768
 Provides: bundled(golang(github.com/golang/protobuf/ptypes/any)) = 925541529c1fa6821df4e44ce2723319eb2be768
 Provides: bundled(golang(github.com/golang/protobuf/ptypes/duration)) = 925541529c1fa6821df4e44ce2723319eb2be768
@@ -182,9 +200,11 @@ Provides: bundled(golang(github.com/golang/protobuf/ptypes/timestamp)) = 9255415
 Provides: bundled(golang(github.com/google/btree)) = cc6329d4279e3f025a53a83c397d2339b5705c45
 Provides: bundled(golang(github.com/google/gofuzz)) = 24818f796faf91cd76ec7bddd72458fbced7a6c1
 Provides: bundled(golang(github.com/google/gopacket)) = 67a21c4470a0598531a769727aef40b870ffa128
+Provides: bundled(golang(github.com/google/gopacket/ip4defrag)) = 67a21c4470a0598531a769727aef40b870ffa128
 Provides: bundled(golang(github.com/google/gopacket/layers)) = 67a21c4470a0598531a769727aef40b870ffa128
 Provides: bundled(golang(github.com/google/gopacket/pcap)) = 67a21c4470a0598531a769727aef40b870ffa128
 Provides: bundled(golang(github.com/google/gopacket/pcapgo)) = 67a21c4470a0598531a769727aef40b870ffa128
+Provides: bundled(golang(github.com/google/gopacket/tcpassembly)) = 67a21c4470a0598531a769727aef40b870ffa128
 Provides: bundled(golang(github.com/googleapis/gnostic/OpenAPIv2)) = 41d03372f44f2bc18a72c97615a669fb60e7452a
 Provides: bundled(golang(github.com/googleapis/gnostic/compiler)) = 41d03372f44f2bc18a72c97615a669fb60e7452a
 Provides: bundled(golang(github.com/googleapis/gnostic/extensions)) = 41d03372f44f2bc18a72c97615a669fb60e7452a
@@ -247,10 +267,13 @@ Provides: bundled(golang(github.com/jbowtie/gokogiri/xml)) = e2644e49d5b4a4d2382
 Provides: bundled(golang(github.com/jbowtie/gokogiri/xpath)) = e2644e49d5b4a4d2382d1a4b28dfbb313a4ffb0c
 Provides: bundled(golang(github.com/jonboulle/clockwork)) = ed104f61ea4877bea08af6f759805674861e968d
 Provides: bundled(golang(github.com/json-iterator/go)) = ff2b70c1dbffdd98567bd8c2f9449d97c0d04c88
+Provides: bundled(golang(github.com/jteeuwen/go-bindata)) = 6025e8de665b31fa74ab1a66f2cddd8c0abf887e
+Provides: bundled(golang(github.com/jteeuwen/go-bindata/go-bindata)) = 6025e8de665b31fa74ab1a66f2cddd8c0abf887e
 Provides: bundled(golang(github.com/juju/loggo)) = 8232ab8918d91c72af1a9fb94d3edbe31d88b790
 Provides: bundled(golang(github.com/juju/ratelimit)) = 5b9ff866471762aa2ab2dced63c9fb6f53921342
 Provides: bundled(golang(github.com/juju/webbrowser)) = 54b8c57083b4afb7dc75da7f13e2967b2606a507
 Provides: bundled(golang(github.com/julienschmidt/httprouter)) = d1898390779332322e6b5ca5011da4bf249bb056
+Provides: bundled(golang(github.com/kami-zh/go-capturer)) = e492ea43421da7381e5200a2e22753bfc31347c2
 Provides: bundled(golang(github.com/kardianos/osext)) = c2c54e542fb797ad986b31721e1baedf214ca413
 Provides: bundled(golang(github.com/kr/fs)) = 2788f0dbd16903de03cb8186e5c7d97b69ad387b
 Provides: bundled(golang(github.com/kr/pty)) = 95d05c1eef33a45bd58676b6ce28d105839b8d0b
@@ -263,11 +286,10 @@ Provides: bundled(golang(github.com/lxc/lxd/shared/logger)) = 9907f3a64b6b8ec914
 Provides: bundled(golang(github.com/lxc/lxd/shared/osarch)) = 9907f3a64b6b8ec9144e8be02d633b951439c0f6
 Provides: bundled(golang(github.com/lxc/lxd/shared/simplestreams)) = 9907f3a64b6b8ec9144e8be02d633b951439c0f6
 Provides: bundled(golang(github.com/magiconair/properties)) = c81f9d71af8f8cba1466501d30326b99a4e56c19
+Provides: bundled(golang(github.com/mailru/easyjson)) = 8b799c424f57fa123fc63a99d6383bc6e4c02578
 Provides: bundled(golang(github.com/mailru/easyjson/buffer)) = 2a92e673c9a6302dd05c3a691ae1f24aef46457d
 Provides: bundled(golang(github.com/mailru/easyjson/jlexer)) = 2a92e673c9a6302dd05c3a691ae1f24aef46457d
 Provides: bundled(golang(github.com/mailru/easyjson/jwriter)) = 2a92e673c9a6302dd05c3a691ae1f24aef46457d
-Provides: bundled(golang(github.com/mattbaird/elastigo)) = 441c1531dca50a19990385930149f6785f78fe59
-Provides: bundled(golang(github.com/mattbaird/elastigo/lib)) = 441c1531dca50a19990385930149f6785f78fe59
 Provides: bundled(golang(github.com/mattn/go-runewidth)) = d6bea18f789704b5f83375793155289da36a3c7f
 Provides: bundled(golang(github.com/matttproud/golang_protobuf_extensions/pbutil)) = d0c3fe89de86839aecf2e0579c40ba3bb336a453
 Provides: bundled(golang(github.com/mitchellh/go-homedir)) = 756f7b183b7ab78acdbbee5c7f392838ed459dda
@@ -277,6 +299,9 @@ Provides: bundled(golang(github.com/nlewo/contrail-introspect-cli/collection)) =
 Provides: bundled(golang(github.com/nlewo/contrail-introspect-cli/descriptions)) = e4df28ccf9801abbe32edd5ddaba31a7a62b61b6
 Provides: bundled(golang(github.com/nlewo/contrail-introspect-cli/utils)) = e4df28ccf9801abbe32edd5ddaba31a7a62b61b6
 Provides: bundled(golang(github.com/nu7hatch/gouuid)) = 179d4d0c4d8d407a32af483c2354df1d2c91e6c3
+Provides: bundled(golang(github.com/olivere/elastic)) = 4eb0cace57d54aa19e2c709e13979daeb20130a6
+Provides: bundled(golang(github.com/olivere/elastic/config)) = 4eb0cace57d54aa19e2c709e13979daeb20130a6
+Provides: bundled(golang(github.com/olivere/elastic/uritemplates)) = 4eb0cace57d54aa19e2c709e13979daeb20130a6
 Provides: bundled(golang(github.com/op/go-logging)) = 970db520ece77730c7e4724c61121037378659d9
 Provides: bundled(golang(github.com/opencontainers/runc/libcontainer/user)) = 8fa5343b0058459296399a89bc532aa5508de28d
 Provides: bundled(golang(github.com/pelletier/go-toml)) = 05bcc0fb0d3e60da4b8dd5bd7e0ea563eb4ca943
@@ -299,7 +324,8 @@ Provides: bundled(golang(github.com/robertkrimen/otto/parser)) = bf1c3795ba078da
 Provides: bundled(golang(github.com/robertkrimen/otto/registry)) = bf1c3795ba078da6905fe80bfbc3ed3d8c36e9aa
 Provides: bundled(golang(github.com/robertkrimen/otto/token)) = bf1c3795ba078da6905fe80bfbc3ed3d8c36e9aa
 Provides: bundled(golang(github.com/rogpeppe/fastuuid)) = 6724a57986aff9bff1a1770e9347036def7c89f6
-Provides: bundled(golang(github.com/safchain/ethtool)) = e01512671ed4c2248daf0c5e974ecf88a4947335
+Provides: bundled(golang(github.com/safchain/ethtool)) = 6e3f4faa84e1d8d48afec75ed064cf3611d3f8bf
+Provides: bundled(golang(github.com/safchain/insanelock)) = 33bca45866480bc4b8caca2a94898c3baf161c1e
 Provides: bundled(golang(github.com/shirou/gopsutil/cpu)) = 6a368fb7cd1221fa6ea90facc9447c9a2234c255
 Provides: bundled(golang(github.com/shirou/gopsutil/host)) = 6a368fb7cd1221fa6ea90facc9447c9a2234c255
 Provides: bundled(golang(github.com/shirou/gopsutil/internal/common)) = 6a368fb7cd1221fa6ea90facc9447c9a2234c255
@@ -310,6 +336,7 @@ Provides: bundled(golang(github.com/shirou/w32)) = bb4de0191aa41b5507caa14b0650c
 Provides: bundled(golang(github.com/skydive-project/dede/dede)) = d95b69cd1f75137aab3bcc01d6facf2aa7a43b80
 Provides: bundled(golang(github.com/skydive-project/dede/statics)) = d95b69cd1f75137aab3bcc01d6facf2aa7a43b80
 Provides: bundled(golang(github.com/socketplane/libovsdb)) = 5113f8fb4d9d374417ab4ce35424fbea1aad7272
+Provides: bundled(golang(github.com/spaolacci/murmur3)) = f09979ecbc725b9e6d41a297405f65e7e8804acc
 Provides: bundled(golang(github.com/spf13/afero)) = a80ea588265c05730645be8342eeafeaa72b2923
 Provides: bundled(golang(github.com/spf13/afero/mem)) = a80ea588265c05730645be8342eeafeaa72b2923
 Provides: bundled(golang(github.com/spf13/afero/sftp)) = a80ea588265c05730645be8342eeafeaa72b2923
@@ -527,8 +554,7 @@ Provides: bundled(golang(k8s.io/client-go/util/homedir)) = 35ccd4336052e7d73018b
 Provides: bundled(golang(k8s.io/client-go/util/integer)) = 35ccd4336052e7d73018b1382413534936f34eee
 Provides: bundled(golang(k8s.io/kube-openapi/pkg/common)) = 39a7bf85c140f972372c2a0d1ee40adbf0c8bfe1
 
-# e.g. el6 has ppc64 arch without gcc-go, so EA tag is required
-ExclusiveArch:  %{?go_arches:%{go_arches}}%{!?go_arches:%{ix86} x86_64 %{arm}}
+ExclusiveArch: x86_64
 # If go_compiler is not set to 1, there is no virtual provide. Use golang instead.
 BuildRequires:  %{?go_compiler:compiler(go-compiler)}%{!?go_compiler:golang} >= 1.8
 
@@ -573,17 +599,38 @@ Requires:         ansible
 %description ansible
 Ansible recipes to deploy Skydive
 
+%package selinux
+Summary:          Skydive selinux recipes
+Requires:         policycoreutils, libselinux-utils
+Requires(post):   selinux-policy-base >= %{selinux_policyver}, policycoreutils
+Requires(postun): policycoreutils
+BuildArch:        noarch
+
+%description selinux
+This package installs and sets up the SELinux policy security module for Skydive.
+
 %prep
-%setup -q -n skydive-%{source}/src/%{import_path}
+%setup -q -n skydive-%{fullver}/src/%{import_path}
 
 %build
-export GOPATH=%{_builddir}/skydive-%{source}
+export GOPATH=%{_builddir}/skydive-%{fullver}
 export GO15VENDOREXPERIMENT=1
+export LDFLAGS="$LDFLAGS -X github.com/skydive-project/skydive/version.Version=%{fullver}"
 %gobuild -o bin/skydive %{import_path}
 bin/skydive bash-completion
 
+# SELinux build
+%if 0%{?fedora} >= 27
+cp contrib/packaging/rpm/skydive.te{.fedora,}
+%endif
+%if 0%{?rhel} >= 7
+cp contrib/packaging/rpm/skydive.te{.rhel,}
+%endif
+make -f /usr/share/selinux/devel/Makefile -C contrib/packaging/rpm/ skydive.pp
+bzip2 contrib/packaging/rpm/skydive.pp
+
 %install
-export GOPATH=%{_builddir}/skydive-%{source}
+export GOPATH=%{_builddir}/skydive-%{fullver}
 install -D -p -m 755 bin/skydive %{buildroot}%{_bindir}/skydive
 ln -s skydive %{buildroot}%{_bindir}/skydive-cli
 for bin in agent analyzer
@@ -596,7 +643,18 @@ install -D -m 644 skydive-bash-completion.sh %{buildroot}/%{_sysconfdir}/bash_co
 install -d -m 755 %{buildroot}/%{_datadir}/skydive-ansible
 cp -R contrib/ansible/* %{buildroot}/%{_datadir}/skydive-ansible/
 
+# SELinux
+install -D -m 644 contrib/packaging/rpm/skydive.pp.bz2 %{buildroot}%{_datadir}/selinux/packages/skydive.pp.bz2
+install -D -m 644 contrib/packaging/rpm/skydive.if %{buildroot}%{_datadir}/selinux/devel/include/contrib/skydive.if
+install -D -m 644 contrib/packaging/rpm/skydive-selinux.8 %{buildroot}%{_mandir}/man8/skydive-selinux.8
+
 %post agent
+if %{_sbindir}/selinuxenabled && [ "$1" = "1" ] ; then
+    set +e
+    %{_sbindir}/semanage port -a -t skydive_agent_sflow_ports_t -p udp 6343
+    %{_sbindir}/semanage port -a -t skydive_agent_sflow_ports_t -p udp 6345-6355
+    %{_sbindir}/semanage port -a -t skydive_agent_pcapsocket_ports_t -p tcp 8100-8132
+fi
 %systemd_post %{basename:%{name}-agent.service}
 
 %preun agent
@@ -604,8 +662,20 @@ cp -R contrib/ansible/* %{buildroot}/%{_datadir}/skydive-ansible/
 
 %postun agent
 %systemd_postun
+if %{_sbindir}/selinuxenabled && [ "$1" = "0" ] ; then
+    set +e
+    %{_sbindir}/semanage port -d -t skydive_agent_sflow_ports_t -p udp 6343
+    %{_sbindir}/semanage port -d -t skydive_agent_sflow_ports_t -p udp 6345-6355
+    %{_sbindir}/semanage port -d -t skydive_agent_pcapsocket_ports_t -p tcp 8100-8132
+fi
 
 %post analyzer
+if %{_sbindir}/selinuxenabled && [ "$1" = "1" ] ; then
+    set +e
+    %{_sbindir}/semanage port -a -t skydive_etcd_ports_t -p tcp 12379-12380
+    %{_sbindir}/semanage port -a -t skydive_analyzer_db_connect_ports_t -p tcp 2480
+    %{_sbindir}/semanage port -a -t skydive_analyzer_db_connect_ports_t -p tcp 9200
+fi
 %systemd_post %{basename:%{name}-analyzer.service}
 
 %preun analyzer
@@ -613,8 +683,30 @@ cp -R contrib/ansible/* %{buildroot}/%{_datadir}/skydive-ansible/
 
 %postun analyzer
 %systemd_postun
+if %{_sbindir}/selinuxenabled && [ "$1" = "0" ] ; then
+    set +e
+    %{_sbindir}/semanage port -d -t skydive_etcd_ports_t -p tcp 12379-12380
+    %{_sbindir}/semanage port -d -t skydive_analyzer_db_connect_ports_t -p tcp 2480
+    %{_sbindir}/semanage port -d -t skydive_analyzer_db_connect_ports_t -p tcp 9200
+fi
+
+%pre selinux
+%selinux_relabel_pre -s %{selinuxtype}
+
+%post selinux
+%selinux_modules_install -s %{selinuxtype} %{_datadir}/selinux/packages/%{name}.pp.bz2
+
+%postun selinux
+if [ "$1" = "0" ]; then
+    %selinux_modules_uninstall -s %{name}
+fi
+
+%posttrans selinux
+%selinux_relabel_post -s %{selinuxtype}
 
 %check
+%{buildroot}%{_bindir}/skydive version | grep -q "skydive github.com/skydive-project/skydive %{fullver}" || exit 1
+
 %if 0%{?with_check} && 0%{?with_unit_test} && 0%{?with_devel}
 %gotest $(go list ./... | grep -v '/tests' | grep -v '/vendor/')
 %endif
@@ -637,7 +729,16 @@ cp -R contrib/ansible/* %{buildroot}/%{_datadir}/skydive-ansible/
 %files ansible
 %{_datadir}/skydive-ansible
 
+%files selinux
+%attr(0644,root,root) %{_datadir}/selinux/packages/%{name}.pp.bz2
+%attr(0644,root,root) %{_datadir}/selinux/devel/include/%{moduletype}/%{name}.if
+%attr(0644,root,root) %{_mandir}/man8/skydive-selinux.8.*
+
 %changelog
+* Mon Jun 18 2018 Sylvain Baubeau <sbaubeau@redhat.com> - 0.18.0-1
+- Bump to version 0.18.0
+- Add SElinux policy
+
 * Tue Apr 03 2018 Sylvain Afchain <safchain@redhat.com> - 0.17.0-1
 - Bump to version 0.17.0
 
