@@ -6,10 +6,6 @@
 %endif
 %{!?with_features:%global with_features %{nil}}
 
-%if !%{defined gobuild}
-%define gobuild(o:) go build -compiler gc -ldflags "${LDFLAGS:-} -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \\n')" -a -v -x %{?**};
-%endif
-
 %if !%{defined gotest}
 %define gotest() go test -compiler gc -ldflags "${LDFLAGS:-}" %{?**};
 %endif
@@ -22,6 +18,12 @@
 %global selinux_policyver 3.13.1-192
 %global moduletype contrib
 
+%if 0%{?fedora} >= 27
+%global selinux_semanage_pkg policycoreutils-python-utils
+%else
+%global selinux_semanage_pkg policycoreutils-python
+%endif
+
 %if %{defined fullver}
 %define vertag %extracttag %{fullver}
 %if "%{vertag}" != ""
@@ -29,7 +31,7 @@
 %endif
 %endif
 
-%{!?fullver:%global fullver 0.18.0}
+%{!?fullver:%global fullver 0.19.0}
 %define version %{extractversion %{fullver}}
 %{!?tag:%global tag 1}
 
@@ -50,6 +52,10 @@ Requires:       %{name}-selinux = %{version}-%{release}
 
 # This is used by the specfile-update-bundles script to automatically
 # generate the list of the Go libraries bundled into the Skydive binaries
+Provides: bundled(golang(github.com/GehirnInc/crypt)) = 5a3fafaa7c86150c096504f50630ca6ac8cff681
+Provides: bundled(golang(github.com/GehirnInc/crypt/common)) = 5a3fafaa7c86150c096504f50630ca6ac8cff681
+Provides: bundled(golang(github.com/GehirnInc/crypt/internal)) = 5a3fafaa7c86150c096504f50630ca6ac8cff681
+Provides: bundled(golang(github.com/GehirnInc/crypt/md5_crypt)) = 5a3fafaa7c86150c096504f50630ca6ac8cff681
 Provides: bundled(golang(github.com/Knetic/govaluate)) = 9aa49832a739dcd78a5542ff189fb82c3e423116
 Provides: bundled(golang(github.com/Microsoft/go-winio)) = fff283ad5116362ca252298cfc9b95828956d85d
 Provides: bundled(golang(github.com/PuerkitoBio/purell)) = fd18e053af8a4ff11039269006e8037ff374ce0e
@@ -170,7 +176,6 @@ Provides: bundled(golang(github.com/docker/go-connections/sockets)) = 990a1a1a70
 Provides: bundled(golang(github.com/docker/go-connections/tlsconfig)) = 990a1a1a70b0da4c4cb70e117971a4f0babfbf1a
 Provides: bundled(golang(github.com/docker/go-units)) = 5d2041e26a699eaca682e2ea41c8f891e1060444
 Provides: bundled(golang(github.com/emicklei/go-restful)) = 68c9750c36bb8cb433f1b88c807b4b30df4acc40
-Provides: bundled(golang(github.com/emicklei/go-restful-swagger12)) = 7524189396c68dc4b04d53852f9edc00f816b123
 Provides: bundled(golang(github.com/emicklei/go-restful/log)) = 68c9750c36bb8cb433f1b88c807b4b30df4acc40
 Provides: bundled(golang(github.com/fatih/structs)) = f5faa72e73092639913f5833b75e1ac1d6bc7a63
 Provides: bundled(golang(github.com/fsnotify/fsnotify)) = 30411dbcefb7a1da7e84f75530ad3abe4011b4f8
@@ -183,6 +188,7 @@ Provides: bundled(golang(github.com/go-openapi/jsonpointer)) = 779f45308c19820f1
 Provides: bundled(golang(github.com/go-openapi/jsonreference)) = 36d33bfe519efae5632669801b180bf1a245da3b
 Provides: bundled(golang(github.com/go-openapi/spec)) = 7abd5745472fff5eb3685386d5fb8bf38683154d
 Provides: bundled(golang(github.com/go-openapi/swag)) = f3f9494671f93fcff853e3c6e9e948b3eb71e590
+Provides: bundled(golang(github.com/go-test/deep)) = 57af0be209c537ba1d9c2a4b285ab7aea0897e51
 Provides: bundled(golang(github.com/gobwas/httphead)) = 01c9b01b368a438f615030bbbd5e4f9e0023e15c
 Provides: bundled(golang(github.com/gobwas/pool)) = 32dbaa12caca20fad12253c30591227e04f62cdd
 Provides: bundled(golang(github.com/gobwas/pool/pbufio)) = 32dbaa12caca20fad12253c30591227e04f62cdd
@@ -239,6 +245,7 @@ Provides: bundled(golang(github.com/grpc-ecosystem/go-grpc-prometheus)) = 6b7015
 Provides: bundled(golang(github.com/grpc-ecosystem/grpc-gateway/runtime)) = 8cc3a55af3bcf171a1c23a90c4df9cf591706104
 Provides: bundled(golang(github.com/grpc-ecosystem/grpc-gateway/runtime/internal)) = 8cc3a55af3bcf171a1c23a90c4df9cf591706104
 Provides: bundled(golang(github.com/grpc-ecosystem/grpc-gateway/utilities)) = 8cc3a55af3bcf171a1c23a90c4df9cf591706104
+Provides: bundled(golang(github.com/hashicorp/go-version)) = 23480c0665776210b5fbbac6eaaee40e3e6a96b7
 Provides: bundled(golang(github.com/hashicorp/golang-lru)) = 0a025b7e63adc15a622f29b0b2c4c3848243bbf6
 Provides: bundled(golang(github.com/hashicorp/golang-lru/simplelru)) = 0a025b7e63adc15a622f29b0b2c4c3848243bbf6
 Provides: bundled(golang(github.com/hashicorp/hcl)) = 23c074d0eceb2b8a5bfdbb271ab780cde70f05a8
@@ -294,14 +301,19 @@ Provides: bundled(golang(github.com/lxc/lxd/shared/osarch)) = 9907f3a64b6b8ec914
 Provides: bundled(golang(github.com/lxc/lxd/shared/simplestreams)) = 9907f3a64b6b8ec9144e8be02d633b951439c0f6
 Provides: bundled(golang(github.com/magiconair/properties)) = c81f9d71af8f8cba1466501d30326b99a4e56c19
 Provides: bundled(golang(github.com/mailru/easyjson)) = 8b799c424f57fa123fc63a99d6383bc6e4c02578
+Provides: bundled(golang(github.com/mailru/easyjson/bootstrap)) = 3fdea8d05856a0c8df22ed4bc71b3219245e4485
 Provides: bundled(golang(github.com/mailru/easyjson/buffer)) = 2a92e673c9a6302dd05c3a691ae1f24aef46457d
+Provides: bundled(golang(github.com/mailru/easyjson/easyjson)) = 3fdea8d05856a0c8df22ed4bc71b3219245e4485
+Provides: bundled(golang(github.com/mailru/easyjson/gen)) = 3fdea8d05856a0c8df22ed4bc71b3219245e4485
 Provides: bundled(golang(github.com/mailru/easyjson/jlexer)) = 2a92e673c9a6302dd05c3a691ae1f24aef46457d
 Provides: bundled(golang(github.com/mailru/easyjson/jwriter)) = 2a92e673c9a6302dd05c3a691ae1f24aef46457d
+Provides: bundled(golang(github.com/mailru/easyjson/parser)) = 3fdea8d05856a0c8df22ed4bc71b3219245e4485
 Provides: bundled(golang(github.com/mattn/go-runewidth)) = d6bea18f789704b5f83375793155289da36a3c7f
 Provides: bundled(golang(github.com/matttproud/golang_protobuf_extensions/pbutil)) = d0c3fe89de86839aecf2e0579c40ba3bb336a453
 Provides: bundled(golang(github.com/mitchellh/go-homedir)) = 756f7b183b7ab78acdbbee5c7f392838ed459dda
 Provides: bundled(golang(github.com/mitchellh/hashstructure)) = ab25296c0f51f1022f01cd99dfb45f1775de8799
 Provides: bundled(golang(github.com/mitchellh/mapstructure)) = 281073eb9eb092240d33ef253c404f1cca550309
+Provides: bundled(golang(github.com/mohae/deepcopy)) = c48cc78d482608239f6c4c92a4abd87eb8761c90
 Provides: bundled(golang(github.com/nlewo/contrail-introspect-cli/collection)) = e4df28ccf9801abbe32edd5ddaba31a7a62b61b6
 Provides: bundled(golang(github.com/nlewo/contrail-introspect-cli/descriptions)) = e4df28ccf9801abbe32edd5ddaba31a7a62b61b6
 Provides: bundled(golang(github.com/nlewo/contrail-introspect-cli/utils)) = e4df28ccf9801abbe32edd5ddaba31a7a62b61b6
@@ -340,8 +352,8 @@ Provides: bundled(golang(github.com/shirou/gopsutil/mem)) = 6a368fb7cd1221fa6ea9
 Provides: bundled(golang(github.com/shirou/gopsutil/net)) = 6a368fb7cd1221fa6ea90facc9447c9a2234c255
 Provides: bundled(golang(github.com/shirou/gopsutil/process)) = 6a368fb7cd1221fa6ea90facc9447c9a2234c255
 Provides: bundled(golang(github.com/shirou/w32)) = bb4de0191aa41b5507caa14b0650cdbddcd9280b
-Provides: bundled(golang(github.com/skydive-project/dede/dede)) = d95b69cd1f75137aab3bcc01d6facf2aa7a43b80
-Provides: bundled(golang(github.com/skydive-project/dede/statics)) = d95b69cd1f75137aab3bcc01d6facf2aa7a43b80
+Provides: bundled(golang(github.com/skydive-project/dede/dede)) = 90df8e39b679fe75c1f2e8c3d9f3dd4646b9771f
+Provides: bundled(golang(github.com/skydive-project/dede/statics)) = 90df8e39b679fe75c1f2e8c3d9f3dd4646b9771f
 Provides: bundled(golang(github.com/socketplane/libovsdb)) = 5113f8fb4d9d374417ab4ce35424fbea1aad7272
 Provides: bundled(golang(github.com/spaolacci/murmur3)) = f09979ecbc725b9e6d41a297405f65e7e8804acc
 Provides: bundled(golang(github.com/spf13/afero)) = a80ea588265c05730645be8342eeafeaa72b2923
@@ -365,7 +377,7 @@ Provides: bundled(golang(github.com/vishvananda/netns)) = 604eaf189ee867d8c147fa
 Provides: bundled(golang(github.com/weaveworks/tcptracer-bpf)) = e080bd747dc6b62d4ed3ed2b7f0be4801bef8faf
 Provides: bundled(golang(github.com/xeipuuv/gojsonpointer)) = 6fe8760cad3569743d51ddbb243b26f8456742dc
 Provides: bundled(golang(github.com/xeipuuv/gojsonreference)) = e02fc20de94c78484cd5ffb007f8af96be030a45
-Provides: bundled(golang(github.com/xeipuuv/gojsonschema)) = 702b404897d4364af44dc8dcabc9815947942325
+Provides: bundled(golang(github.com/xeipuuv/gojsonschema)) = 1d523034197ff1f222f6429836dd36a2457a1874
 Provides: bundled(golang(github.com/xiang90/probing)) = 07dd2e8dfe18522e9c447ba95f2fe95262f63bb2
 Provides: bundled(golang(github.com/xordataexchange/crypt/backend)) = b2862e3d0a775f18c7cfe02273500ae307b61218
 Provides: bundled(golang(github.com/xordataexchange/crypt/backend/consul)) = b2862e3d0a775f18c7cfe02273500ae307b61218
@@ -451,117 +463,123 @@ Provides: bundled(golang(gopkg.in/sourcemap.v1/base64vlq)) = eef8f47ab679652a7d3
 Provides: bundled(golang(gopkg.in/urfave/cli.v2)) = b2bf3c5abeb90da407891aecd1df2c5a1f6170c1
 Provides: bundled(golang(gopkg.in/validator.v2)) = 3e4f037f12a1221a0864cf0dd2e81c452ab22448
 Provides: bundled(golang(gopkg.in/yaml.v2)) = bef53efd0c76e49e6de55ead051f886bea7e9420
-Provides: bundled(golang(k8s.io/api/admissionregistration/v1alpha1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/apps/v1beta1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/apps/v1beta2)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/authentication/v1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/authentication/v1beta1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/authorization/v1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/authorization/v1beta1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/autoscaling/v1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/autoscaling/v2beta1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/batch/v1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/batch/v1beta1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/batch/v2alpha1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/certificates/v1beta1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/core/v1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/extensions/v1beta1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/networking/v1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/policy/v1beta1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/rbac/v1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/rbac/v1alpha1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/rbac/v1beta1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/scheduling/v1alpha1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/settings/v1alpha1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/storage/v1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/api/storage/v1beta1)) = 4df58c811fe2e65feb879227b2b245e4dc26e7ad
-Provides: bundled(golang(k8s.io/apimachinery/pkg/api/equality)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/api/errors)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/api/meta)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/api/resource)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/apis/meta/internalversion)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/apis/meta/v1)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/apis/meta/v1/unstructured)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/apis/meta/v1alpha1)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/conversion)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/conversion/queryparams)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/conversion/unstructured)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/fields)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/labels)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/schema)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer/json)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer/protobuf)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer/recognizer)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer/streaming)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer/versioning)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/selection)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/types)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/cache)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/clock)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/diff)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/errors)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/framer)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/intstr)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/json)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/net)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/runtime)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/sets)) = 18a564baac720819100827c16fdebcadb05b2d0d
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/validation)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/validation/field)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/wait)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/util/yaml)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/version)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/pkg/watch)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/apimachinery/third_party/forked/golang/reflect)) = 019ae5ada31de202164b118aee88ee2d14075c31
-Provides: bundled(golang(k8s.io/client-go/discovery)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/scheme)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/admissionregistration/v1alpha1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/apps/v1beta1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/apps/v1beta2)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/authentication/v1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/authentication/v1beta1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/authorization/v1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/authorization/v1beta1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/autoscaling/v1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/autoscaling/v2beta1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/batch/v1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/batch/v1beta1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/batch/v2alpha1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/certificates/v1beta1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/core/v1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/extensions/v1beta1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/networking/v1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/policy/v1beta1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/rbac/v1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/rbac/v1alpha1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/rbac/v1beta1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/scheduling/v1alpha1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/settings/v1alpha1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/storage/v1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/storage/v1beta1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/pkg/version)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/rest)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/rest/watch)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/tools/auth)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/tools/cache)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/tools/clientcmd)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/tools/clientcmd/api)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/tools/clientcmd/api/latest)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/tools/clientcmd/api/v1)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/tools/metrics)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/tools/pager)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/tools/reference)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/transport)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/util/cert)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/util/flowcontrol)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/util/homedir)) = 35ccd4336052e7d73018b1382413534936f34eee
-Provides: bundled(golang(k8s.io/client-go/util/integer)) = 35ccd4336052e7d73018b1382413534936f34eee
+Provides: bundled(golang(k8s.io/api/admissionregistration/v1alpha1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/admissionregistration/v1beta1)) = kubernetes-1.9.1
+Provides: bundled(golang(k8s.io/api/apps/v1)) = kubernetes-1.9.1
+Provides: bundled(golang(k8s.io/api/apps/v1beta1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/apps/v1beta2)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/authentication/v1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/authentication/v1beta1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/authorization/v1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/authorization/v1beta1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/autoscaling/v1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/autoscaling/v2beta1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/batch/v1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/batch/v1beta1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/batch/v2alpha1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/certificates/v1beta1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/core/v1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/events/v1beta1)) = kubernetes-1.9.1
+Provides: bundled(golang(k8s.io/api/extensions/v1beta1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/networking/v1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/policy/v1beta1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/rbac/v1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/rbac/v1alpha1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/rbac/v1beta1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/scheduling/v1alpha1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/settings/v1alpha1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/storage/v1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/api/storage/v1alpha1)) = kubernetes-1.9.1
+Provides: bundled(golang(k8s.io/api/storage/v1beta1)) = 006a217681ae70cbacdd66a5e2fca1a61a8ff28e
+Provides: bundled(golang(k8s.io/apimachinery/pkg/api/errors)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/api/meta)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/api/resource)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/apis/meta/internalversion)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/apis/meta/v1)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/apis/meta/v1/unstructured)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/apis/meta/v1alpha1)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/conversion)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/conversion/queryparams)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/fields)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/labels)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/schema)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer/json)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer/protobuf)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer/recognizer)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer/streaming)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/runtime/serializer/versioning)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/selection)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/types)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/cache)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/clock)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/diff)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/errors)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/framer)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/intstr)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/json)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/net)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/runtime)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/sets)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/validation)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/validation/field)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/wait)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/util/yaml)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/version)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/pkg/watch)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/apimachinery/third_party/forked/golang/reflect)) = 68f9c3a1feb3140df59c67ced62d3a5df8e6c9c2
+Provides: bundled(golang(k8s.io/client-go/discovery)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/scheme)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/admissionregistration/v1alpha1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/admissionregistration/v1beta1)) = kubernetes-1.9.1
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/apps/v1)) = kubernetes-1.9.1
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/apps/v1beta1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/apps/v1beta2)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/authentication/v1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/authentication/v1beta1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/authorization/v1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/authorization/v1beta1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/autoscaling/v1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/autoscaling/v2beta1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/batch/v1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/batch/v1beta1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/batch/v2alpha1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/certificates/v1beta1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/core/v1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/events/v1beta1)) = kubernetes-1.9.1
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/extensions/v1beta1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/networking/v1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/policy/v1beta1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/rbac/v1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/rbac/v1alpha1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/rbac/v1beta1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/scheduling/v1alpha1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/settings/v1alpha1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/storage/v1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/storage/v1alpha1)) = kubernetes-1.9.1
+Provides: bundled(golang(k8s.io/client-go/kubernetes/typed/storage/v1beta1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/pkg/version)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/rest)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/rest/watch)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/tools/auth)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/tools/cache)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/tools/clientcmd)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/tools/clientcmd/api)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/tools/clientcmd/api/latest)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/tools/clientcmd/api/v1)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/tools/metrics)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/tools/pager)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/tools/reference)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/transport)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/util/buffer)) = kubernetes-1.9.1
+Provides: bundled(golang(k8s.io/client-go/util/cert)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/util/flowcontrol)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/util/homedir)) = 9389c055a838d4f208b699b3c7c51b70f2368861
+Provides: bundled(golang(k8s.io/client-go/util/integer)) = 9389c055a838d4f208b699b3c7c51b70f2368861
 Provides: bundled(golang(k8s.io/kube-openapi/pkg/common)) = 39a7bf85c140f972372c2a0d1ee40adbf0c8bfe1
 
-ExclusiveArch: x86_64
 # If go_compiler is not set to 1, there is no virtual provide. Use golang instead.
 BuildRequires:  %{?go_compiler:compiler(go-compiler)}%{!?go_compiler:golang} >= 1.8
 
@@ -580,9 +598,9 @@ topology and flows informations.
 %package analyzer
 Summary:          Skydive analyzer
 Requires:         %{name} = %{version}-%{release}
-Requires(post):   systemd
+Requires(post):   systemd %{selinux_semanage_pkg}
 Requires(preun):  systemd
-Requires(postun): systemd
+Requires(postun): systemd %{selinux_semanage_pkg}
 
 %description analyzer
 Collects data captured by the Skydive agents.
@@ -590,9 +608,9 @@ Collects data captured by the Skydive agents.
 %package agent
 Summary:          Skydive agent
 Requires:         %{name} = %{version}-%{release}
-Requires(post):   systemd
+Requires(post):   systemd %{selinux_semanage_pkg}
 Requires(preun):  systemd
-Requires(postun): systemd
+Requires(postun): systemd %{selinux_semanage_pkg}
 
 %description agent
 The Skydive agent has to be started on each node where the topology and
@@ -608,7 +626,7 @@ Ansible recipes to deploy Skydive
 
 %package selinux
 Summary:          Skydive selinux recipes
-Requires:         policycoreutils, libselinux-utils
+Requires:         container-selinux, policycoreutils, libselinux-utils
 Requires(post):   selinux-policy-base >= %{selinux_policyver}, policycoreutils
 Requires(postun): policycoreutils
 BuildArch:        noarch
@@ -621,7 +639,6 @@ This package installs and sets up the SELinux policy security module for Skydive
 
 %build
 export GOPATH=%{_builddir}/skydive-%{fullver}
-export LDFLAGS="$LDFLAGS -X github.com/skydive-project/skydive/version.Version=%{fullver}"
 make compile BUILD_CMD=go VERSION=%{fullver} %{with_features}
 %{_builddir}/skydive-%{fullver}/bin/skydive bash-completion
 
@@ -740,6 +757,9 @@ fi
 %attr(0644,root,root) %{_mandir}/man8/skydive-selinux.8.*
 
 %changelog
+* Wed Aug 8 2018 Sylvain Baubeau <sbaubeau@redhat.com> - 0.19.0-1
+- Bump to version 0.19.0
+
 * Mon Jun 18 2018 Sylvain Baubeau <sbaubeau@redhat.com> - 0.18.0-1
 - Bump to version 0.18.0
 - Add SElinux policy
